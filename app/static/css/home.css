@@ -3,6 +3,18 @@ body {
     font-family: sans-serif;
 }
 
+header {
+    margin: 0;
+    padding: 10px 50px;
+    background: #e8e8e8;
+}
+
+footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
 nav {
     margin: 0;
     padding: 30px 50px;
@@ -14,6 +26,8 @@ nav a {
     color: #597a96;
     text-decoration: none;
 }
+
+
 
 .container {
     padding: 50px;
