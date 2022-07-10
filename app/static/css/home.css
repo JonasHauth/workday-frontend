@@ -23,9 +23,18 @@ nav {
 
 nav a {
     margin-right: 30px;
-    color: #597a96;
+    color: black;
     text-decoration: none;
 }
+
+a:hover {
+    color: #8FBFBF;
+  }
+
+a:active {
+    color: #8FBFBF;
+  }
+
 
 
 
