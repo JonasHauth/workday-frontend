@@ -1,6 +1,7 @@
 <footer>
   <nav>
    {% for link in nav %}
+     <span class="material-icons">{{ link.iconName }}</span>
      <a href="{{ link.url }}">{{ link.name }}</a>
    {% endfor %}
  </nav>
