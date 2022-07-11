@@ -2,11 +2,50 @@
   <link href="{{ url_for('static', filename='css/navigation.css') }}" rel="stylesheet">
 {% endblock %}
 
-<footer>
-  <nav>
+  <!-- <nav>
    {% for link in nav %}
      <span class="material-icons">{{ link.iconName }}</span>
      <a href="{{ link.url }}">{{ link.name }}</a>
    {% endfor %}
- </nav>
+ </nav> -->
+
+<footer>
+<nav class="navbar fixed-bottom navbar-expand-md" role="navigation">
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse">
+
+      <ul class="navbar-nav">
+                <li class="nav-item active">
+                    <a href="#">
+                      <span class="material-icons">home</span>
+                        <p>Dein Tag</p>
+                    </a>
+                </li>
+                <li>
+                  <a href="#">
+                    <span class="material-icons">calendar_month</span>
+                      <p>Kalender</p>
+                  </a>
+                </li>
+                <li>
+                  <a href="#">
+                    <span class="material-icons">search</span>
+                      <p>Spaces</p>
+                  </a>
+                </li>
+                <li>
+                  <a href="#">
+                    <span class="material-icons">inventory</span>
+                      <p>Buchungen</p>
+                  </a>
+                </li>
+                <li>
+                  <a href="#">
+                    <span class="material-icons">account_circle</span>
+                      <p>Profil</p>
+                  </a>
+                </li>
+      </ul>
+    </div>
+  </div>
+</nav>
 </footer>
