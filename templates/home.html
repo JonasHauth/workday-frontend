@@ -9,13 +9,13 @@
     var calendarEl = document.getElementById('calendar');
     var calendar = new Calendar(calendarEl, {
     headerToolbar: {
-      center: 'dayGridMonth,timeGridFourDay' // buttons for switching between views
+      center: 'dayGridMonth,timeGridOneDay' // buttons for switching between views
     },
     views: {
-      timeGridFourDay: {
+      timeGridOneDay: {
       type: 'timeGrid',
       duration: { days: 1 },
-      buttonText: '4 day'
+      buttonText: '1 day'
       }
     }
   });
