@@ -1,6 +1,8 @@
-"""Route declaration."""
-from app import app
+"""Initialize Flask Application."""
+from flask import Flask
 from flask import render_template, url_for, request
+
+app = Flask(__name__, template_folder="templates")
 
 
 @app.route("/", methods=['GET', 'POST'])
@@ -19,3 +21,8 @@ def home():
         title="workday",
         description="Organisiere deinen Arbeitstag mit Workday.",
     )
+
+
+
+if __name__ == "__main__":
+    app.run()
