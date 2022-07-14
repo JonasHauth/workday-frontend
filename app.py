@@ -1,6 +1,11 @@
 """Initialize Flask Application."""
 from flask import Flask, jsonify
 from flask import render_template, url_for, request
+from google.oauth2.credentials import Credentials
+from google_auth_oauthlib.flow import InstalledAppFlow
+from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
+import datetime
 
 from dotenv import load_dotenv
 load_dotenv()  # take environment variables from .env.
@@ -104,6 +109,7 @@ def calendar():
         description="Organisiere deinen Arbeitstag mit Workday.",
     )
 
+
 @app.route("/user")
 def index():
     if current_user.is_authenticated:
@@ -129,7 +135,7 @@ def login():
     request_uri = client.prepare_request_uri(
         authorization_endpoint,
         redirect_uri=request.base_url + "/callback",
-        scope=["openid", "email", "profile"],
+        scope=["openid", "email", "profile", 'https://www.googleapis.com/auth/calendar'],
     )
     return redirect(request_uri)
 
@@ -158,6 +164,42 @@ def callback():
 
     # Parse the tokens!
     client.parse_request_body_response(json.dumps(token_response.json()))
+
+    print(client.token)
+    print(client.token_type)
+    print(client.access_token)
+    print(client.refresh_token)
+    
+    credentials = Credentials(
+            token=client.access_token,
+            token_uri="https://www.googleapis.com/oauth2/v3/token", 
+            client_id=os.environ['GOOGLE_CLIENT_ID'],
+            client_secret=os.environ['GOOGLE_CLIENT_SECRET'],
+        )
+
+    try:
+        service = build('calendar', 'v3', credentials=credentials)
+
+        # Call the Calendar API
+        now = datetime.datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
+        print('Getting the upcoming 10 events')
+        events_result = service.events().list(calendarId='primary', timeMin=now,
+                                              maxResults=10, singleEvents=True,
+                                              orderBy='startTime').execute()
+        events = events_result.get('items', [])
+
+        if not events:
+            print('No upcoming events found.')
+            return
+
+        # Prints the start and name of the next 10 events
+        for event in events:
+            start = event['start'].get('dateTime', event['start'].get('date'))
+            print(start, event['summary'])
+
+    except HttpError as error:
+        print('An error occurred: %s' % error)
+
 
     # Now that you have tokens (yay) let's find and hit the URL
     # from Google that gives you the user's profile information,
