@@ -1,14 +1,6 @@
 """Initialize Flask Application."""
 from flask import Flask, jsonify
-from flask import redirect, request, url_for
-from flask_login import (
-    LoginManager,
-    current_user,
-    login_required,
-    login_user,
-    logout_user,
-)
-from flask import render_template, url_for, request
+from flask import redirect, request, url_for, render_template
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
@@ -17,6 +9,13 @@ from oauthlib.oauth2 import WebApplicationClient
 import os
 import requests
 import datetime
+from flask_login import (
+    LoginManager,
+    current_user,
+    login_required,
+    login_user,
+    logout_user,
+)
 
 app = Flask(__name__, template_folder="templates")
 app.secret_key = os.environ.get("SECRET_KEY") or os.urandom(24)
@@ -64,6 +63,13 @@ def load_user(user_id):
 
 def get_google_provider_cfg():
     return requests.get(GOOGLE_DISCOVERY_URL).json()
+
+
+
+
+
+
+# ----------------------- Routes
 
 
 @app.route("/", methods=['GET', 'POST'])
@@ -235,6 +241,7 @@ def callback():
 def logout():
     logout_user()
     return redirect(url_for("profil"))
+
 
 
 
