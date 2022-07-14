@@ -8,6 +8,16 @@
   document.addEventListener('DOMContentLoaded', function() {
     var calendarEl = document.getElementById('calendar');
     var calendar = new Calendar(calendarEl, {
+
+    events : [
+      {% for event in events %}
+      {
+        title : '{{event.title}}',
+        start : '{{event.start}}',
+      },
+      {% endfor %}
+    ],
+
     headerToolbar: {
       center: 'dayGridMonth,timeGridOneDay' // buttons for switching between views
     },
@@ -19,6 +29,7 @@
       }
     }
   });
+  calendar.render();
 });
 </script>
 

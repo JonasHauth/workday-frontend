@@ -8,16 +8,18 @@ app = Flask(__name__, template_folder="templates")
 @app.route("/", methods=['GET', 'POST'])
 def home():
     """Landing page route."""
-    nav = [
-        {"name": "Dein Tag", "url": "https://example.com/1", "iconName": "home"},
-        {"name": "Kalender", "url": "https://example.com/2", "iconName": "calendar_month"},
-        {"name": "Spaces", "url": "https://example.com/4", "iconName": "search"},
-        {"name": "Buchungen", "url": "https://example.com/5", "iconName": "inventory"},
-        {"name": "Profil", "url": "https://example.com/6", "iconName": "account_circle"},
+
+    events = [
+        {"name": "Uni", "startdate": "2022-07-20", "enddate": "2022-07-20"},
+        {"name": "Uni2", "startdate": "2022-07-19", "enddate": "2022-07-20"},
+        {"name": "Uni3", "startdate": "2022-07-20", "enddate": "2022-07-20"},
+        {"name": "Uni4", "startdate": "2022-07-19", "enddate": "2022-07-19"},
+        {"name": "Uni5", "startdate": "2022-07-14", "enddate": "2022-07-14"},
     ]
+
     return render_template(
         "home.html",
-        nav=nav,
+        events=events,
         title="workday",
         description="Organisiere deinen Arbeitstag mit Workday.",
     )
@@ -25,16 +27,18 @@ def home():
 @app.route("/calendar", methods=['GET', 'POST'])
 def calendar():
     """Landing page route."""
-    nav = [
-        {"name": "Dein Tag", "url": "https://example.com/1", "iconName": "home"},
-        {"name": "Kalender", "url": "https://example.com/2", "iconName": "calendar_month"},
-        {"name": "Spaces", "url": "https://example.com/4", "iconName": "search"},
-        {"name": "Buchungen", "url": "https://example.com/5", "iconName": "inventory"},
-        {"name": "Profil", "url": "https://example.com/6", "iconName": "account_circle"},
+
+    events = [
+        {"title": "Uni", "start": "2022-07-20", "end": "2022-07-20"},
+        {"title": "Uni2", "start": "2022-07-19", "end": "2022-07-20"},
+        {"title": "Uni3", "start": "2022-07-20", "end": "2022-07-20"},
+        {"title": "Uni4", "start": "2022-07-19", "end": "2022-07-19"},
+        {"title": "Uni5", "start": "2022-07-14", "end": "2022-07-14"},
     ]
+
     return render_template(
         "calendar.html",
-        nav=nav,
+        events=events,
         title="workday",
         description="Organisiere deinen Arbeitstag mit Workday.",
     )
