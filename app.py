@@ -5,6 +5,8 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
+from oauthlib.oauth2 import WebApplicationClient
+import requests
 import datetime
 
 from dotenv import load_dotenv
@@ -25,9 +27,7 @@ from flask_login import (
     login_user,
     logout_user,
 )
-from flask_login import LoginManager
-from oauthlib.oauth2 import WebApplicationClient
-import requests
+
 
 # Internal imports
 from db import init_db_command
@@ -110,8 +110,8 @@ def calendar():
     )
 
 
-@app.route("/user")
-def index():
+@app.route("/profil")
+def profil():
     if current_user.is_authenticated:
         return (
             "<p>Hello, {}! You're logged in! Email: {}</p>"
@@ -233,13 +233,13 @@ def callback():
     login_user(user)
 
     # Send user back to homepage
-    return redirect(url_for("index"))
+    return redirect(url_for("profil"))
 
 @app.route("/logout")
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for("index"))
+    return redirect(url_for("profil"))
 
 
 
