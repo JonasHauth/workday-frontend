@@ -18,7 +18,7 @@ import os
 import requests
 import datetime
 
-app = Flask(__name__, template_folder="templates") #
+app = Flask(__name__, template_folder="templates")
 app.secret_key = os.environ.get("SECRET_KEY") or os.urandom(24)
 
 from dotenv import load_dotenv
@@ -239,4 +239,4 @@ def logout():
 
 
 if __name__ == "__main__":
-    app.run(ssl_context="adhoc")
+    app.run(ssl_context="adhoc") #  
