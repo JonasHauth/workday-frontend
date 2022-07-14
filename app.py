@@ -1,13 +1,25 @@
 """Initialize Flask Application."""
 from flask import Flask, jsonify
+from flask import redirect, request, url_for
+from flask_login import (
+    LoginManager,
+    current_user,
+    login_required,
+    login_user,
+    logout_user,
+)
 from flask import render_template, url_for, request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from oauthlib.oauth2 import WebApplicationClient
+import os
 import requests
 import datetime
+
+app = Flask(__name__, template_folder="templates") #
+app.secret_key = os.environ.get("SECRET_KEY") or os.urandom(24)
 
 from dotenv import load_dotenv
 load_dotenv()  # take environment variables from .env.
@@ -17,17 +29,6 @@ load_dotenv()  # take environment variables from .env.
 import json
 import os
 import sqlite3
-
-# Third-party libraries
-from flask import Flask, redirect, request, url_for
-from flask_login import (
-    LoginManager,
-    current_user,
-    login_required,
-    login_user,
-    logout_user,
-)
-
 
 # Internal imports
 from db import init_db_command
@@ -39,10 +40,6 @@ GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET", None)
 GOOGLE_DISCOVERY_URL = (
     "https://accounts.google.com/.well-known/openid-configuration"
 )
-
-
-app = Flask(__name__, template_folder="templates")
-app.secret_key = os.environ.get("SECRET_KEY") or os.urandom(24)
 
 
 # User session management setup
@@ -59,8 +56,6 @@ except sqlite3.OperationalError:
 
 # OAuth 2 client setup
 client = WebApplicationClient(GOOGLE_CLIENT_ID)
-
-# Flask-Login helper to retrieve a user from our db
 
 # To-Do: Make it go to User DB
 @login_manager.user_loader
