@@ -1,41 +1,12 @@
 {% extends 'layout.html' %}
 
+
+
 {% block css %}
-
-<link href='fullcalendar/main.css' rel='stylesheet' />
-<script src='fullcalendar/main.js'></script>
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    var calendarEl = document.getElementById('calendar');
-    var calendar = new Calendar(calendarEl, {
-
-    events : [
-      {% for event in events %}
-      {
-        title : '{{event.title}}',
-        start : '{{event.start}}',
-      },
-      {% endfor %}
-    ],
-
-    headerToolbar: {
-      center: 'dayGridMonth,timeGridOneDay' // buttons for switching between views
-    },
-    views: {
-      timeGridOneDay: {
-      type: 'timeGrid',
-      duration: { days: 1 },
-      buttonText: '1 day'
-      }
-    }
-  });
-  calendar.render();
-});
-</script>
-
 {% endblock %}
 
 {% block content %}
+
     <div class="container">
         <h1>{{title}}</h1>
         <p>{{description}}</p>
@@ -43,4 +14,32 @@
     </div>
 
     <div id='calendar'></div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+      var calendarEl = document.getElementById("calendar");
+      var calendar = new FullCalendar.Calendar(calendarEl, {
+      initialView: "listWeek",
+      headerToolbar: {
+      left: "prev,next today",
+      center: "title",
+      right: "dayGridMonth,timeGridWeek,timeGridDay",
+      },
+    
+    events : 
+    [
+      {% for event in events %}
+      {
+        title : '{{event.title}}',
+        start : '{{event.start}}',
+      },
+      {% endfor %}
+    ],
+    
+    });
+    
+    calendar.render();
+    });
+    </script>  
+
 {% endblock %} 
