@@ -69,10 +69,23 @@ def get_google_provider_cfg():
 
 
 
+
+
+
+
 # ----------------------- Routes
 
-
 @app.route("/", methods=['GET', 'POST'])
+def initial():
+    """Initial Page"""
+    if current_user.is_authenticated:
+        return redirect(url_for("home"))
+    else:
+        return redirect(url_for("login"))
+
+
+
+@app.route("/deinTag", methods=['GET', 'POST'])
 def home():
     """Landing page route."""
 
@@ -87,6 +100,8 @@ def home():
     events_for_display = []
 
     if current_user.is_authenticated:
+        
+        login = True
 
         credentials = Credentials(
                 token=client.access_token,
@@ -130,12 +145,18 @@ def home():
         except HttpError as error:
             print('An error occurred: %s' % error)
 
-    return render_template(
-        "home.html",
-        events=events_for_display,
-        title="workday",
-        description="Organisiere deinen Arbeitstag mit Workday.",
-    )
+        return render_template(
+            "home.html",
+            login=current_user.is_authenticated,
+            events=events_for_display,
+            title="workday",
+            description="Organisiere deinen Arbeitstag mit Workday.",
+        )
+
+    else:
+        return redirect(url_for("login"))
+
+    
 
 @app.route("/calendar", methods=['GET', 'POST'])
 def calendar():
@@ -275,7 +296,7 @@ def callback():
     login_user(user)
 
     # Send user back to homepage
-    return redirect(url_for("profil"))
+    return redirect(url_for("home"))
 
 @app.route("/logout")
 @login_required
