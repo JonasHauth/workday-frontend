@@ -106,26 +106,26 @@ def home():
                                                 orderBy='startTime').execute()
             events = events_result.get('items', [])
 
-            if not events:
-                print('No upcoming events found.')
-                return
-
+            
             print(events)
 
-            # Gets the start, end and name of the next 20 events
-            for event in events:
-                summary = event['summary']
-                start = event['start'].get('dateTime')
-                end = event['end'].get('dateTime')
-                
-                event_dict = {
-                    "title": summary,
-                    "start": start,
-                    "end": end
-                }
-                events_for_display.append(event_dict)
-                
-                print(event_dict)
+            # If no events don't procced
+            if events:
+
+                # Gets the start, end and name of the next 20 events
+                for event in events:
+                    summary = event['summary']
+                    start = event['start'].get('dateTime')
+                    end = event['end'].get('dateTime')
+                    
+                    event_dict = {
+                        "title": summary,
+                        "start": start,
+                        "end": end
+                    }
+                    events_for_display.append(event_dict)
+                    
+                    print(event_dict)
 
         except HttpError as error:
             print('An error occurred: %s' % error)
