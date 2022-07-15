@@ -84,9 +84,55 @@ def home():
         {"title": "Uni5", "start": "2022-07-14", "end": "2022-07-14"},
     ]
 
+    events_for_display = []
+
+    if current_user.is_authenticated:
+
+        credentials = Credentials(
+                token=client.access_token,
+                token_uri="https://www.googleapis.com/oauth2/v3/token", 
+                client_id=os.environ['GOOGLE_CLIENT_ID'],
+                client_secret=os.environ['GOOGLE_CLIENT_SECRET'],
+            )
+
+        try:
+            service = build('calendar', 'v3', credentials=credentials)
+
+            # Call the Calendar API
+            now = datetime.datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
+            print('Getting the upcoming 10 events')
+            events_result = service.events().list(calendarId='primary', timeMin=now,
+                                                maxResults=20, singleEvents=True,
+                                                orderBy='startTime').execute()
+            events = events_result.get('items', [])
+
+            if not events:
+                print('No upcoming events found.')
+                return
+
+            print(events)
+
+            # Gets the start, end and name of the next 20 events
+            for event in events:
+                summary = event['summary']
+                start = event['start'].get('dateTime')
+                end = event['end'].get('dateTime')
+                
+                event_dict = {
+                    "title": summary,
+                    "start": start,
+                    "end": end
+                }
+                events_for_display.append(event_dict)
+                
+                print(event_dict)
+
+        except HttpError as error:
+            print('An error occurred: %s' % error)
+
     return render_template(
         "home.html",
-        events=events,
+        events=events_for_display,
         title="workday",
         description="Organisiere deinen Arbeitstag mit Workday.",
     )
@@ -165,11 +211,6 @@ def callback():
 
     # Parse the tokens!
     client.parse_request_body_response(json.dumps(token_response.json()))
-
-    print(client.token)
-    print(client.token_type)
-    print(client.access_token)
-    print(client.refresh_token)
     
     credentials = Credentials(
             token=client.access_token,
