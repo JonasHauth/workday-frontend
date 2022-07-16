@@ -81,7 +81,7 @@ def initial():
     if current_user.is_authenticated:
         return redirect(url_for("home"))
     else:
-        return redirect(url_for("login"))
+        return redirect(url_for("profil"))
 
 
 
@@ -100,8 +100,6 @@ def home():
     events_for_display = []
 
     if current_user.is_authenticated:
-        
-        login = True
 
         credentials = Credentials(
                 token=client.access_token,
@@ -114,7 +112,8 @@ def home():
             service = build('calendar', 'v3', credentials=credentials)
 
             # Call the Calendar API
-            now = datetime.datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
+            now = datetime.datetime.utcnow().isoformat()# 'Z' indicates UTC time
+            print(now)
             print('Getting the upcoming 10 events')
             events_result = service.events().list(calendarId='primary', timeMin=now,
                                                 maxResults=20, singleEvents=True,
@@ -145,9 +144,23 @@ def home():
         except HttpError as error:
             print('An error occurred: %s' % error)
 
+
+        # try:
+        #     service = build('calendar', 'v3', credentials=credentials)
+
+        #     event = {
+        #         'summary': 'Test Event',
+        #         'start': {
+        #             'dateTime': datetime.datetime.utcnow().isoformat() + 'Z',
+        #             'timeZone': 'Europe/Berlin'
+        #         }
+        #     }
+
+        # except HttpError as error:
+        #     print('An error occurred: %s' % error)
+
         return render_template(
             "home.html",
-            login=current_user.is_authenticated,
             events=events_for_display,
             title="workday",
             description="Organisiere deinen Arbeitstag mit Workday.",
@@ -253,7 +266,7 @@ def callback():
 
         if not events:
             print('No upcoming events found.')
-            return
+            return redirect(url_for("home"))
 
         # Prints the start and name of the next 10 events
         for event in events:
