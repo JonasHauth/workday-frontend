@@ -85,7 +85,7 @@ def initial():
 
 
 
-@app.route("/deinTag", methods=['GET', 'POST'])
+@app.route("/home", methods=['GET', 'POST'])
 def home():
     """Landing page route."""
 
@@ -176,6 +176,46 @@ def calendar():
         title="workday",
         description="Organisiere deinen Arbeitstag mit Workday.",
     )
+
+
+# Kalendereintrag hinzufügen
+@app.route("/calendar/insert",methods=["POST","GET"])
+def insert():
+    
+    if request.method == 'POST':
+        title = request.form['title']
+        start = request.form['start']
+        end = request.form['end']
+        print(title)     
+        print(start)        
+        
+    return redirect(url_for("home"))
+
+# Kalendereintrag editieren
+@app.route("/calendar/update",methods=["POST","GET"])
+def update():
+    if request.method == 'POST':
+        title = request.form['title']
+        start = request.form['start']
+        end = request.form['end']
+        id = request.form['id']
+        print(title)     
+        print(start)  
+
+    return redirect(url_for("home"))   
+
+# Kalendereintrag löschen
+@app.route("/calendar/delete",methods=["POST","GET"])
+def ajax_delete():
+
+    if request.method == 'POST':
+        getid = request.form['id']
+        print(getid)
+
+
+    return redirect(url_for("home")) 
+
+
 
 
 @app.route("/profil")
