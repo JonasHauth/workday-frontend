@@ -3,6 +3,10 @@
 
 
 {% block css %}
+<script src="https://cdn.paddle.com/paddle/paddle.js"></script>
+<script type="text/javascript">
+	Paddle.Setup({ vendor: 743086 });
+</script>
 {% endblock %}
 
 {% block content %}
@@ -20,9 +24,14 @@
         <img src="static/{{ space.img }}" alt={{ space.name }}  class="card-img-top"/>
         <div class="card-body">
           <h5 class="card-title">{{ space.name }}</h5>
-          <p class="card-text" style=" white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220ch;">{{ space.description }}</p>
+          <p class="card-text" style=" white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 400ch;">{{ space.description }}</p>
+          <p>{{ space.price }} </p>
           <p>{{ space.street }}<br>{{ space.city }}</p>
-          <a href="{{ space.pay }}" class="btn btn-primary"> {{ space.price }} Bezahlen</a>
+          <div role="button" id="payonetime" data-toggle="modal" data-target="#bezahlen" 
+               data-name="{{ space.name }}" data-beschreibung="{{ space.description }}" >
+               Bezahlen
+          </div>
+          
         </div>
       </div>
     </div>
@@ -164,5 +173,76 @@
     });
 
     </script>  
+
+
+
+
+
+
+
+
+
+
+<!-- CHECKOUT MODAL 1  / HTML -->   
+
+<div class="modal fade" id="bezahlen" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style="z-index: 10000000000;">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h3 class="modal-title" id="exampleModalLabel">CHECKOUT </h3>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" style="color: #aaa !important;">x</span></button>
+      </div>
+
+      <div class="modal-body">
+        <form id="pre-checkout" style="margin-top: 40px;">
+          <input id="name" type="text" value="" placeholder="Name" style="width:100%; margin-bottom: 8px;">
+          <input id="useremail" type="text" value="" placeholder="E-Mail-Adresse" style="width:100%">   
+        </form>
+       <div class="checkout-container"></div>
+      </div>
+
+      <div class="modal-footer">
+      </div>
+
+    </div>
+  </div>
+  </div>
+<!-- CHECKOUT MODAL / ENDE-->    
+
+<!-- CHECKOUT MODAL 1 /JAVASCRIPT -->   
+<script>
+
+  //Paddle Payment ------------
+  
+    Paddle.Setup
+    (
+      {
+        vendor: 743086,         
+      }
+    );
+    
+  
+  
+  //Paddle -- Pre-Checkout
+  var form = document.getElementById('pre-checkout');
+  
+  
+  //Paddle --- Open Paddle Checkout  
+      Paddle.Checkout.open({
+        method: 'inline',
+        product: 780653,  
+        email: 'lara.kresiz@gmx.de', // form.useremail.value
+        country: 'DE',
+        postcode: '76185',
+        allowQuantity: false,
+        disableLogout: true,
+        success: 'https://127.0.0.1:5000/calendar', 
+        frameTarget: 'checkout-container',
+        frameInitialHeight: 416,
+        frameStyle: 'width:100%; min-width:312px; background-color: transparent; border: none;'    
+      });
+  
+</script>
   
 {% endblock %} 

@@ -9,6 +9,7 @@ from oauthlib.oauth2 import WebApplicationClient
 import os
 import requests
 import datetime
+from datetime import date
 from flask_login import (
     LoginManager,
     current_user,
@@ -91,7 +92,7 @@ def home():
         "street": "Roonstraße 23 a",
         "city": "Karlsruhe",
         "price": "39 € pro Tag",
-        "pay": "2022-07-20"},
+        "pay": "#"},
 
         {"img": "img/Space2.jpg", 
         "name": "Karlsruhe Park Arkaden", 
@@ -99,7 +100,7 @@ def home():
         "street": "Ludwig-Erhard-Allee Nr. 10",
         "city": "Karlsruhe",
         "price": "249 € pro Monat",
-        "pay": "2022-07-20"},
+        "pay": "#"},
 
         {"img": "img/Space3.jpg", 
         "name": "Regus", 
@@ -107,7 +108,7 @@ def home():
         "street": "Waldhornstraße 49",
         "city": "Karlsruhe",
         "price": "39 € pro Tag",
-        "pay": "2022-07-20"},
+        "pay": "#"},
 
         
     ]
