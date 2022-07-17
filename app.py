@@ -73,35 +73,18 @@ def get_google_provider_cfg():
 
 
 
+
+
 # ----------------------- Routes
 
 @app.route("/", methods=['GET', 'POST'])
-def initial():
-    """Initial Page"""
-    if current_user.is_authenticated:
-        return redirect(url_for("home"))
-    else:
-        return redirect(url_for("login"))
-
-
-
 @app.route("/home", methods=['GET', 'POST'])
 def home():
     """Landing page route."""
 
-    events = [
-        {"title": "Uni", "start": "2022-07-20", "end": "2022-07-20"},
-        {"title": "Uni2", "start": "2022-07-19", "end": "2022-07-20"},
-        {"title": "Uni3", "start": "2022-07-20", "end": "2022-07-20"},
-        {"title": "Uni4", "start": "2022-07-19", "end": "2022-07-19"},
-        {"title": "Uni5", "start": "2022-07-14", "end": "2022-07-14"},
-    ]
-
     events_for_display = []
 
     if current_user.is_authenticated:
-        
-        login = True
 
         credentials = Credentials(
                 token=client.access_token,
@@ -117,7 +100,7 @@ def home():
             now = datetime.datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
             print('Getting the upcoming 10 events')
             events_result = service.events().list(calendarId='primary', timeMin=now,
-                                                maxResults=20, singleEvents=True,
+                                                maxResults=40, singleEvents=True,
                                                 orderBy='startTime').execute()
             events = events_result.get('items', [])
 
@@ -156,26 +139,72 @@ def home():
     else:
         return redirect(url_for("login"))
 
+
     
 
 @app.route("/calendar", methods=['GET', 'POST'])
 def calendar():
     """Landing page route."""
 
-    events = [
-        {"title": "Uni", "start": "2022-07-20", "end": "2022-07-20"},
-        {"title": "Uni2", "start": "2022-07-19", "end": "2022-07-20"},
-        {"title": "Uni3", "start": "2022-07-20", "end": "2022-07-20"},
-        {"title": "Uni4", "start": "2022-07-19", "end": "2022-07-19"},
-        {"title": "Uni5", "start": "2022-07-14", "end": "2022-07-14"},
-    ]
+    events_for_display = []
 
-    return render_template(
-        "calendar.html",
-        events=events,
-        title="workday",
-        description="Organisiere deinen Arbeitstag mit Workday.",
-    )
+    if current_user.is_authenticated:
+
+        credentials = Credentials(
+                token=client.access_token,
+                token_uri="https://www.googleapis.com/oauth2/v3/token", 
+                client_id=os.environ['GOOGLE_CLIENT_ID'],
+                client_secret=os.environ['GOOGLE_CLIENT_SECRET'],
+            )
+
+        try:
+            service = build('calendar', 'v3', credentials=credentials)
+
+            # Call the Calendar API
+            now = datetime.datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
+            print('Getting the upcoming 10 events')
+            events_result = service.events().list(calendarId='primary', timeMin=now,
+                                                maxResults=40, singleEvents=True,
+                                                orderBy='startTime').execute()
+            events = events_result.get('items', [])
+
+            
+            print(events)
+
+            # If no events don't procced
+            if events:
+
+                # Gets the start, end and name of the next 20 events
+                for event in events:
+                    summary = event['summary']
+                    start = event['start'].get('dateTime')
+                    end = event['end'].get('dateTime')
+                    
+                    event_dict = {
+                        "title": summary,
+                        "start": start,
+                        "end": end
+                    }
+                    events_for_display.append(event_dict)
+                    
+                    print(event_dict)
+
+        except HttpError as error:
+            print('An error occurred: %s' % error)
+
+        return render_template(
+            "calendar.html",
+            login=current_user.is_authenticated,
+            events=events_for_display,
+            title="workday",
+            description="Organisiere deinen Arbeitstag mit Workday.",
+        )
+
+    else:
+        return redirect(url_for("login"))
+
+
+
 
 
 # Kalendereintrag hinzufügen

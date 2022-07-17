@@ -4,9 +4,9 @@ body {
 }
 
 header {
-    margin: 0;
-    padding: 10px 50px;
-    background: #e8e8e8;
+    width: 100%; 
+    background: #fff; /*alte Farbe: #e8e8e8 */
+    padding: 10px 30px;
 }
 
 footer {

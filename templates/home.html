@@ -8,12 +8,47 @@
 {% block content %}
 
 <div class="container">
-        <h1>{{title}}</h1>
-        <p>{{description}}</p>
-        <p>This is an example of a <span class="material-icons">face</span> face icon.</p>
+
+  <div class="row">
+    <div class="col">
+      <div class="card" style="width: 18rem;">
+        <img src="..." class="card-img-top" alt="...">
+        <div class="card-body">
+          <h5 class="card-title">Card title</h5>
+          <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+          <a href="#" class="btn btn-primary">Go somewhere</a>
+        </div>
+      </div>
     </div>
 
-    <div id='calendar'></div>
+    <div class="col">
+      <div class="card" style="width: 18rem;">
+        <img src="..." class="card-img-top" alt="...">
+        <div class="card-body">
+          <h5 class="card-title">Card title</h5>
+          <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+          <a href="#" class="btn btn-primary">Go somewhere</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="card" style="width: 18rem;">
+        <img src="..." class="card-img-top" alt="...">
+        <div class="card-body">
+          <h5 class="card-title">Card title</h5>
+          <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+          <a href="#" class="btn btn-primary">Go somewhere</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+
+</div>
+
+    <div id='calendar' class="container" style="margin-bottom: 100px !important"></div>
 
     <script>
 
@@ -21,12 +56,14 @@
       var calendarEl = document.getElementById("calendar");
       var calendar = new FullCalendar.Calendar(calendarEl, {
       initialView: "listWeek",
+      locale: 'de',
+      contentHeight: 'auto',
 
       headerToolbar: 
       {
         left: "prev,next today",
         center: "title",
-        right: "dayGridMonth,timeGridWeek,timeGridDay",
+        right: "dayGridMonth,timeGridWeek,timeGridDay, listWeek",
       },
 
       selectable: true,
