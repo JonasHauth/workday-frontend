@@ -80,7 +80,39 @@ def get_google_provider_cfg():
 @app.route("/", methods=['GET', 'POST'])
 @app.route("/home", methods=['GET', 'POST'])
 def home():
+
     """Landing page route."""
+    
+    spaces = [
+
+        {"img": "img/Space1.jpg", 
+        "name": "SteamWork", 
+        "description": "Auf fast 3.000 qm Fläche erwartet euch geballte Innovationspower: Unternehmen und Gründende unterschiedlicher Branchen sowie vielfältige Veranstaltungen unter einem Dach. Kommt an Board – gemeinsam bringen wir die Next Work Culture nach Karlsruhe.", 
+        "street": "Roonstraße 23 a",
+        "city": "Karlsruhe",
+        "price": "39 € pro Tag",
+        "pay": "2022-07-20"},
+
+        {"img": "img/Space2.jpg", 
+        "name": "Karlsruhe Park Arkaden", 
+        "description": "A modern low-rise building set in a superbly landscaped and laid out office park is the location for the Karlsruhe City business centre.", 
+        "street": "Ludwig-Erhard-Allee Nr. 10",
+        "city": "Karlsruhe",
+        "price": "249 € pro Monat",
+        "pay": "2022-07-20"},
+
+        {"img": "img/Space3.jpg", 
+        "name": "Regus", 
+        "description": "Auf fast 5.000 qm Fläche erwartet euch geballte Innovationspower: Unternehmen und Gründende unterschiedlicher Branchen sowie vielfältige Veranstaltungen unter einem Dach. Kommt an Board – gemeinsam bringen wir die Next Work Culture nach Karlsruhe.", 
+        "street": "Waldhornstraße 49",
+        "city": "Karlsruhe",
+        "price": "39 € pro Tag",
+        "pay": "2022-07-20"},
+
+        
+    ]
+
+
 
     events_for_display = []
 
@@ -147,6 +179,7 @@ def home():
         return render_template(
             "home.html",
             events=events_for_display,
+            spaces=spaces,
             title="workday",
             description="Organisiere deinen Arbeitstag mit Workday.",
         )

@@ -8,40 +8,28 @@
 {% block content %}
 
 <div class="container">
+  <div class="row"><p>Hey Jonas, deine Empfehlungen für heute...</p></div>
 
   <div class="row">
+
+    {% for space in spaces[0:3] %}
+
+
     <div class="col">
       <div class="card" style="width: 18rem;">
-        <img src="..." class="card-img-top" alt="...">
+        <img src="static/{{ space.img }}" alt={{ space.name }}  class="card-img-top"/>
         <div class="card-body">
-          <h5 class="card-title">Card title</h5>
-          <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-          <a href="#" class="btn btn-primary">Go somewhere</a>
+          <h5 class="card-title">{{ space.name }}</h5>
+          <p class="card-text" style=" white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220ch;">{{ space.description }}</p>
+          <p>{{ space.street }}<br>{{ space.city }}</p>
+          <a href="{{ space.pay }}" class="btn btn-primary"> {{ space.price }} Bezahlen</a>
         </div>
       </div>
     </div>
 
-    <div class="col">
-      <div class="card" style="width: 18rem;">
-        <img src="..." class="card-img-top" alt="...">
-        <div class="card-body">
-          <h5 class="card-title">Card title</h5>
-          <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-          <a href="#" class="btn btn-primary">Go somewhere</a>
-        </div>
-      </div>
-    </div>
+    {% endfor %}
 
-    <div class="col">
-      <div class="card" style="width: 18rem;">
-        <img src="..." class="card-img-top" alt="...">
-        <div class="card-body">
-          <h5 class="card-title">Card title</h5>
-          <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-          <a href="#" class="btn btn-primary">Go somewhere</a>
-        </div>
-      </div>
-    </div>
+    
   </div>
 
   

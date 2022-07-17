@@ -1,0 +1,29 @@
+li {
+    padding: 15px;
+}
+
+.fixed-bottom{
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    left: 0;
+}
+.navbar {
+    position: relative;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    padding: 0 1rem;
+}
+
+.navbar-nav li.active > a {
+	color: #8FBFBF;
+}
