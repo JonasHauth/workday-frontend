@@ -5,8 +5,8 @@
 
 {% block content %}
 
-<div class="container" style="margin-bottom: 80px;">
-  <div class="row"><p>Hey Jonas, deine Empfehlungen für heute...</p></div>
+<div class="container" style="margin-bottom: 100px;">
+  <div class="row"><p>Hey {{ current_user.name }}, deine Empfehlungen für heute...</p></div>
 
   {% for space in spaces[0:4] %}
 
