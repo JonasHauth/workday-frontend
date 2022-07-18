@@ -56,112 +56,108 @@
         {
           left: "prev,next today",
           center: "title",
-          right: "dayGridMonth,timeGridWeek,timeGridDay, listWeek",
+          right: "listWeek",
         },
 
         selectable: true,
-        // selectHelper: true,
-        select : function(info) 
-        {
-          var title = prompt ("Enter Event Titel");
-          if (title)
-          { 
-            var start = info.startStr;
-            var end = info.endStr;
-            $.ajax
-            (
-              {
-                url:"/calendar/insert",
-                type:"POST",
-                data:{title:title, start:start, end:end},
-                success:function(data)
-                {
-                  //alert(data)
-                    calendar.refetchEvents();
-                    
-                    alert("Added Successfully");
-                    window.location.replace("/calendar");
-                    
-                  }
-              }
-            )
+      // selectHelper: true,
+      select : function(info) 
+      {
+        var title = prompt ("Enter Event Titel");
+        if (title)
+        { 
+          var start = info.startStr;
+          var end = info.endStr;
+          $.ajax
+          (
+            {
+              url:"/calendar/insert",
+              type:"POST",
+              data:{title:title, start:start, end:end},
+              success:function(data)
+               {
+                 //alert(data)
+                  window.location.replace("/calendar");
+                  
+                }
+            }
+          )
 
+        }
+      },
+
+      editable: true,
+
+      eventResize: function(info)
+      {
+        var start = info.event.startStr;
+        var end = info.event.endStr;
+        var title = info.event.title;
+        var id = info.event.id;
+        $.ajax
+        (
+          {
+            url:"/calendar/update",
+            type:"PUT",
+            data:{title:title, start:start, end:end, id:id},
+            success:function()
+            {
+              alert('Event Update');
+            }
           }
-        },
-
-        editable: true,
-
-        eventResize: function(info)
+        )
+      },
+      
+      eventDrop: function(info)
+      {
+        var start = info.event.startStr;
+        var end = info.event.endStr;
+        var title = info.event.title;
+        var id = info.event.id;
+        $.ajax
+        (
+          {
+            url:"/calendar/update",
+            type:"PUT",
+            data:{title:title, start:start, end:end, id:id},
+            success:function()
+            {
+              alert("Event Updated");
+            }
+          }
+        );
+      },
+  
+      eventClick: function(info)
+      {
+        if(confirm("Are you sure you want to remove it?"))
         {
-          var start = info.event.dateStr.formatDate(start, "Y-MM-DD HH:mm:ss");
-          var end = info.event.endStr.formatDate(start, "Y-MM-DD HH:mm:ss");
-          var title = info.event.title;
           var id = info.event.id;
           $.ajax
           (
             {
-              url:"/calendar/update",
-              type:"POST",
-              data:{title:title, start:start, end:end, id:id},
+              url:"/calendar/delete",
+              type:"DELETE",
+              data:{id:id},
               success:function()
               {
-                alert('Event Update');
+                window.location.replace("/calendar");
               }
             }
           )
-        },
-        
-        eventDrop: function(info)
-        {
-          var start = info.event.dateStr.formatDate(start, "Y-MM-DD HH:mm:ss");
-          var end = info.event.endStr.formatDate(start, "Y-MM-DD HH:mm:ss");
-          var title = info.event.title;
-          var id = event.id;
-          $.ajax
-          (
-            {
-              url:"/calendar/update",
-              type:"POST",
-              data:{title:title, start:start, end:end, id:id},
-              success:function()
-              {
-                alert("Event Updated");
-              }
-            }
-          );
-        },
+        }
+      },
+  
 
-        eventClick: function(info)
-        {
-          if(confirm("Are you sure you want to remove it?"))
-          {
-            var id = info.event.id;
-            $.ajax
-            (
-              {
-                url:"/calendar/delete",
-                type:"POST",
-                data:{id:id},
-                success:function()
-                {
-                  alert("Event Removed");
-                  window.location.replace("/calendar");
-                }
-              }
-            )
-          }
-        },
+      events: [{% for event in events %}{ id : '{{event.id}}', title : '{{event.title}}', start : '{{event.start}}', end : '{{event.end}}', }, {% endfor %}],
+    
+    
+    });
+    
+    calendar.render();
+    });
 
-
-        events: [{% for event in events %}{ id : '{{event.id}}', title : '{{event.title}}', start : '{{event.start}}', end : '{{event.end}}', }, {% endfor %}],
-
-
-      });
-
-      calendar.render();
-      });
-
-</script> 
+    </script> 
 
 
 

@@ -1,16 +1,19 @@
 """Initialize Flask Application."""
 from csv import excel
 from flask import Flask, jsonify
-from flask import redirect, request, url_for, render_template
+from flask import redirect, request, url_for, render_template, Response, send_from_directory
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from oauthlib.oauth2 import WebApplicationClient
+
 import os
 import requests
 import datetime
+from pathlib import Path
 from datetime import date
+
 from flask_login import (
     LoginManager,
     current_user,
@@ -143,7 +146,25 @@ def home():
             # Get all entries
             res = requests.get('http://127.0.0.1:8080/calendar')
             print("Get calendar request " + str(res.status_code))
-            events_for_display = res.json()
+
+            events_for_display_change = res.json()
+
+            for event in events_for_display_change:
+                id = event['_id']
+                print(id)
+                summary = event['summary']
+                start = event['start']
+                end = event['end']
+                
+                event_dict = {
+                    "id": id,
+                    "title": summary,
+                    "start": start,
+                    "end": end
+                }
+                events_for_display.append(event_dict)
+                
+                print(event_dict)
 
         except HttpError as error:
             print('An error occurred: %s' % error)
@@ -158,7 +179,7 @@ def home():
         )
 
     else:
-        return redirect(url_for("login"))
+        return redirect(url_for("profil"))
 
 
     
@@ -226,7 +247,7 @@ def calendar():
         )
 
     else:
-        return redirect(url_for("login"))
+        return redirect(url_for("profil"))
 
 
 
@@ -344,14 +365,7 @@ def insertspaceincalender():
         except HttpError as error:
             print('An error occurred: %s' % error)
 
-        return render_template(
-            "calendar.html",
-            login=current_user.is_authenticated,
-            events=events_for_display,
-            title="workday",
-            description="Organisiere deinen Arbeitstag mit Workday.",
-        )
-
+        return redirect(url_for("calendar"))
 
 
 
@@ -533,7 +547,7 @@ Profil anzeigen
 def profil():
     if current_user.is_authenticated:
         return render_template(
-            "successfullogin.html",
+            "profil.html",
             title="workday",
             description="Organisiere deinen Arbeitstag mit Workday.",
         )
@@ -592,18 +606,10 @@ def callback():
             client_id=os.environ['GOOGLE_CLIENT_ID'],
             client_secret=os.environ['GOOGLE_CLIENT_SECRET'],
         )
-
-
-    # Now that you have tokens (yay) let's find and hit the URL
-    # from Google that gives you the user's profile information,
-    # including their Google profile image and email
     userinfo_endpoint = google_provider_cfg["userinfo_endpoint"]
     uri, headers, body = client.add_token(userinfo_endpoint)
     userinfo_response = requests.get(uri, headers=headers, data=body)
 
-    # You want to make sure their email is verified.
-    # The user authenticated with Google, authorized your
-    # app, and now you've verified their email through Google!
     if userinfo_response.json().get("email_verified"):
         unique_id = userinfo_response.json()["sub"]
         users_email = userinfo_response.json()["email"]
@@ -612,11 +618,23 @@ def callback():
     else:
         return "User email not available or not verified by Google.", 400
 
+
+
     # Create a user in your db with the information provided
     # by Google
     user = User(
         id_=unique_id, name=users_name, email=users_email, profile_pic=picture
     )
+
+    dictToSend = {
+        '_id': unique_id,
+        'user_id': unique_id,
+        'name': users_name,
+        'email': users_email,
+    }
+
+    res = requests.post('http://127.0.0.1:8080/user', json=dictToSend)
+
 
     # Doesn't exist? Add it to the database.
     if not User.get(unique_id):
@@ -634,7 +652,57 @@ def logout():
     logout_user()
     return redirect(url_for("profil"))
 
+@app.route("/requestdata")
+@login_required
+def requestdata():
 
+    google_provider_cfg = get_google_provider_cfg()
+
+    userinfo_endpoint = google_provider_cfg["userinfo_endpoint"]
+    uri, headers, body = client.add_token(userinfo_endpoint)
+    userinfo_response = requests.get(uri, headers=headers, data=body)
+
+    if userinfo_response.json().get("email_verified"):
+        unique_id = userinfo_response.json()["sub"]
+    else:
+        return "User email not available or not verified by Google.", 400
+
+    json_list = []
+
+    res_user = requests.get('http://127.0.0.1:8080/user/' + unique_id)
+    res_user = res_user.json()
+    
+    res_events = requests.get('http://127.0.0.1:8080/calendar')
+    res_events = res_events.json()
+    
+    # res_user.update(res_events)
+
+    json_list.append(res_user)
+    json_list.append(res_events)
+
+    return jsonify(json_list)
+
+@app.route("/deletedata")
+@login_required
+def deletedata():
+
+    google_provider_cfg = get_google_provider_cfg()
+
+    userinfo_endpoint = google_provider_cfg["userinfo_endpoint"]
+    uri, headers, body = client.add_token(userinfo_endpoint)
+    userinfo_response = requests.get(uri, headers=headers, data=body)
+
+    if userinfo_response.json().get("email_verified"):
+        unique_id = userinfo_response.json()["sub"]
+    else:
+        return "User email not available or not verified by Google.", 400
+
+    requests.delete('http://127.0.0.1:8080/user/' + unique_id)
+    
+    requests.delete('http://127.0.0.1:8080/calendars')
+
+    logout_user()
+    return redirect(url_for("profil"))
 
 
 if __name__ == "__main__":
