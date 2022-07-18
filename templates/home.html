@@ -19,8 +19,9 @@
         <div class="card-body">
           <h5 class="card-title">{{ space.name }}</h5>
           <p class="card-text" style=" white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 400ch;">{{ space.description }}</p>
-          <p>{{ space.price }} </p>
-          <p>{{ space.street }}<br>{{ space.city }}</p>
+          <p class="card-text" style="margin-bottom: 6px !important"><small class="text-muted">{{ space.price }} </small></p>
+          <p class="card-text"><small class="text-muted">{{ space.street }}<br>{{ space.city }} </small></p>
+             
 
           <!-- Modal Button / see Modal Code on the bottom of the page -->
           <button type="button" id="payonetime" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">

@@ -1,0 +1,96 @@
+{% extends 'layout.html' %}
+
+{% block css %}
+{% endblock %}
+
+{% block content %}
+
+<div class="container" style="margin-bottom: 80px;">
+  <div class="row"><p>Hey Jonas, deine Empfehlungen für heute...</p></div>
+
+  {% for space in spaces[0:4] %}
+
+  <div class="row">
+
+    <div class="card mb-3" style="max-width: 740px;">
+        <div class="row g-0">
+          <div class="col-md-4" style="
+            background-image: url('static/{{ space.img }}');
+            background-repeat: no-repeat;
+            background-size: cover;
+            border-top-left-radius:     3px;
+            border-bottom-left-radius:  3px;">
+          </div>
+          <div class="col-md-8">
+            <div class="card-body">
+              <h5 class="card-title">{{ space.name }}</h5>
+              <p class="card-text">{{ space.description }}</p>
+              <p class="card-text"><small class="text-muted">{{ space.price }} </small></p>
+              <p class="card-text"><small class="text-muted">{{ space.street }}<br>{{ space.city }} </small></p>
+              <!-- Modal Button / see Modal Code on the bottom of the page -->
+              <button type="button" id="payonetime" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                Bezahlen
+              </button> 
+            </div>
+          </div>
+        </div>
+      </div>
+
+  </div>
+
+  {% endfor %}
+
+</div>
+
+
+
+
+<!-- CHECKOUT MODAL 1  / HTML -->   
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" style="z-index: 10000000000 !important;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">CHECKOUT</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" style="color: #aaa !important;">x</span></button> 
+      </div>
+      <div class="modal-body">
+        <form id="pre-checkout" style="margin-top: 15px;">
+          <input id="name" type="text" value="" placeholder="Name" style="width:100%; margin-bottom: 8px;">
+          <input id="useremail" type="text" value="" placeholder="E-Mail-Adresse" style="width:100%">   
+        </form>
+       <div class="checkout-container"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- CHECKOUT MODAL / ENDE-->    
+
+<!-- CHECKOUT MODAL 1 /JAVASCRIPT -->  
+<!-- Paddle Payment-->
+<script src="https://cdn.paddle.com/paddle/paddle.js"></script>
+<script type="text/javascript">
+
+ //Paddle Payment ------------
+ Paddle.Setup({ vendor: 743086 });
+  
+  //Paddle --- Open Paddle Checkout  
+  Paddle.Checkout.open({
+    method: 'inline',
+    product: 780653,  
+    email: 'lara.kresiz@gmx.de', // form.useremail.value
+    country: 'DE',
+    postcode: '76185',
+    allowQuantity: false,
+    disableLogout: true,
+    success: 'https://127.0.0.1:5000/calendar/insertspace/', 
+    frameTarget: 'checkout-container',
+    frameInitialHeight: 416,
+    frameStyle: 'width:100%; min-width:312px; background-color: transparent; border: none;'    
+  });
+  
+</script>
+  
+{% endblock %} 
