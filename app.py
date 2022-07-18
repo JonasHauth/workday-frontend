@@ -198,12 +198,13 @@ def calendar():
 
             for event in events_for_display_change:
                 id = event['_id']
+                print(id)
                 summary = event['summary']
                 start = event['start']
                 end = event['end']
                 
                 event_dict = {
-                    "_id": id,
+                    "id": id,
                     "title": summary,
                     "start": start,
                     "end": end
@@ -233,81 +234,12 @@ def calendar():
 
 
 
-
-
-@app.route("/calendartest", methods=['GET', 'POST'])
-def calendartest():
-    """Landing page route."""
-
-    events_for_display = []
-
-    if current_user.is_authenticated:
-
-
-        try:
-            
-            dictToSend = {
-                'token': client.access_token,
-                'token_uri': "https://www.googleapis.com/oauth2/v3/token",
-                'client_id': os.environ['GOOGLE_CLIENT_ID'],
-                'client_secret': os.environ['GOOGLE_CLIENT_SECRET']
-            }
-
-            # Sync google calendars
-            res = requests.post('http://127.0.0.1:8080/sync/google', json=dictToSend)
-
-
-            # Get all entries
-            res = requests.get('http://127.0.0.1:8080/calendar')
-
-            events_for_display_change = res.json()
-
-
-            for event in events_for_display_change:
-                id = event['_id']
-                summary = event['summary']
-                start = event['start']
-                end = event['end']
-                
-                event_dict = {
-                    "_id": id,
-                    "title": summary,
-                    "start": start,
-                    "end": end
-                }
-                events_for_display.append(event_dict)
-                
-                print(event_dict)
-
-
-
-
-        except HttpError as error:
-            print('An error occurred: %s' % error)
-
-        return render_template(
-            "calendartest.html",
-            login=current_user.is_authenticated,
-            events=events_for_display,
-            title="workday",
-            description="Organisiere deinen Arbeitstag mit Workday.",
-        )
-
-    else:
-        return redirect(url_for("login"))
-
-
-
 # Kalendereintrag hinzufügen
 @app.route("/calendar/insert",methods=["POST","GET"])
 def insert():
 
-    print("Test")
-
     if request.method == 'POST':
         
-        
-
         try:
             summary = request.form['title']
 
@@ -345,12 +277,45 @@ def insert():
             'end': dtend,
         }
 
-        print("Test")
 
         # Sync google calendars
         res = requests.post('http://127.0.0.1:8080/calendar', json=dictToSend)
 
-        return jsonify("Success")
+        events_for_display = []
+
+        try:
+            # Get all entries
+            res = requests.get('http://127.0.0.1:8080/calendar')
+
+            events_for_display_change = res.json()
+
+            for event in events_for_display_change:
+                id = event['_id']
+                summary = event['summary']
+                start = event['start']
+                end = event['end']
+                
+                event_dict = {
+                    "id": id,
+                    "title": summary,
+                    "start": start,
+                    "end": end
+                }
+                events_for_display.append(event_dict)
+                
+                print(event_dict)
+
+
+        except HttpError as error:
+            print('An error occurred: %s' % error)
+
+        return render_template(
+            "calendar.html",
+            login=current_user.is_authenticated,
+            events=events_for_display,
+            title="workday",
+            description="Organisiere deinen Arbeitstag mit Workday.",
+        )
     
 
 

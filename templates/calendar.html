@@ -40,8 +40,10 @@
               success:function(data)
                {
                  //alert(data)
-                  calendar.fullCalendar('refetchEvents');
+                  calendar.refetchEvents();
+                  
                   alert("Added Successfully");
+                  window.location.replace("/calendar");
                   
                 }
             }
