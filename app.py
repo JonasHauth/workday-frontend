@@ -1,4 +1,5 @@
 """Initialize Flask Application."""
+from csv import excel
 from flask import Flask, jsonify
 from flask import redirect, request, url_for, render_template
 from google.oauth2.credentials import Credentials
@@ -298,12 +299,6 @@ def calendartest():
 
     if current_user.is_authenticated:
 
-        credentials = Credentials(
-                token=client.access_token,
-                token_uri="https://www.googleapis.com/oauth2/v3/token", 
-                client_id=os.environ['GOOGLE_CLIENT_ID'],
-                client_secret=os.environ['GOOGLE_CLIENT_SECRET'],
-            )
 
         try:
             
@@ -363,16 +358,24 @@ def calendartest():
 @app.route("/calendar/insert",methods=["POST","GET"])
 def insert():
 
-    if request.method == 'POST':
-        summary = request.form['summary']
-        
-        start = request.form['start']
-        dtobj = datetime.datetime.strptime(start, "%Y-%m-%d %H:%M:%S")
-        dtstart = dtobj.isoformat() + '+02:00'
+    print("Test")
 
-        end = request.form['end']
-        dtobj = datetime.datetime.strptime(end, "%Y-%m-%d %H:%M:%S")
-        dtend = dtobj.isoformat() + '+02:00'
+    if request.method == 'POST':
+        
+        
+        try:
+            summary = request.form['title']
+
+            start = request.form['start']
+            dtobj = datetime.datetime.strptime(start, "%Y-%m-%d %H:%M:%S")
+            dtstart = dtobj.isoformat() + '+02:00'
+
+            end = request.form['end']
+            dtobj = datetime.datetime.strptime(end, "%Y-%m-%d %H:%M:%S")
+            dtend = dtobj.isoformat() + '+02:00'
+
+        except:
+            print("Converting failed") 
 
         dictToSend = {
             'token': client.access_token,
@@ -382,8 +385,9 @@ def insert():
             'summary': summary,
             'start': dtstart,
             'end': dtend,
-            'email': current_user.email
         }
+
+        print("Test")
 
         # Sync google calendars
         res = requests.post('http://127.0.0.1:8080/calendar', json=dictToSend)
