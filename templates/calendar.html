@@ -9,7 +9,7 @@
 
     <script>
 
-      document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", function () {
       var calendarEl = document.getElementById("calendar");
       var calendar = new FullCalendar.Calendar(calendarEl, {
       initialView: "dayGridMonth",
@@ -30,8 +30,8 @@
         if (title)
         {
           
-          var start = $.fullCalendar.formatDate(start, "Y-MM-DD HH:mm:ss");
-          var end = $.fullCalendar.formatDate(end, "Y-MM-DD HH:mm:ss");
+          var start = calendar.formatDate(start, "Y-MM-DD HH:mm:ss");
+          var end = calendar.formatDate(end, "Y-MM-DD HH:mm:ss");
           $.ajax
           (
             {
@@ -54,8 +54,8 @@
 
       eventResize:function(event)
       {
-        var start = $.fullCalendar.formatDate(event.start, "Y-MM-DD HH:mm:ss");
-        var end = $.fullCalendar.formatDate(event.end, "Y-MM-DD HH:mm:ss");
+        var start = calendar.formatDate(event.start, "Y-MM-DD HH:mm:ss");
+        var end = calendar.formatDate(event.end, "Y-MM-DD HH:mm:ss");
         var title = event.title;
         var id = event.id;
         $.ajax
@@ -75,8 +75,8 @@
       
       eventDrop:function(event)
       {
-        var start = $.fullCalendar.formatDate(event.start, "Y-MM-DD HH:mm:ss");
-        var end = $.fullCalendar.formatDate(event.end, "Y-MM-DD HH:mm:ss");
+        var start = calendar.formatDate(event.start, "Y-MM-DD HH:mm:ss");
+        var end = calendar.formatDate(event.end, "Y-MM-DD HH:mm:ss");
         var title = event.title;
         var id = event.id;
         $.ajax
