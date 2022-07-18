@@ -130,34 +130,33 @@ def home():
             service = build('calendar', 'v3', credentials=credentials)
 
             # Call the Calendar API
-            now = datetime.datetime.utcnow().isoformat()# 'Z' indicates UTC time
+            now = datetime.datetime.utcnow().isoformat() + 'Z' #indicates UTC time
             print(now)
             print('Getting the upcoming 10 events')
             events_result = service.events().list(calendarId='primary', timeMin=now,
-                                                maxResults=40, singleEvents=True,
+                                                maxResults=10, singleEvents=True,
                                                 orderBy='startTime').execute()
             events = events_result.get('items', [])
 
             
-            print(events)
+            
 
-            # If no events don't procced
-            if events:
+            # Gets the start, end and name of the next 20 events
+            for event in events:
+                summary = event['summary']
+                start = event['start'].get('dateTime')
+                end = event['end'].get('dateTime')
+                    
+                event_dict = {
+                    "title": summary,
+                    "start": start,
+                    "end": end
+                }
+                events_for_display.append(event_dict)
 
-                # Gets the start, end and name of the next 20 events
-                for event in events:
-                    summary = event['summary']
-                    start = event['start'].get('dateTime')
-                    end = event['end'].get('dateTime')
-                    
-                    event_dict = {
-                        "title": summary,
-                        "start": start,
-                        "end": end
-                    }
-                    events_for_display.append(event_dict)
-                    
-                    print(event_dict)
+                print("Test")
+
+                print(event_dict)
 
         except HttpError as error:
             print('An error occurred: %s' % error)
@@ -197,8 +196,18 @@ def calendar():
 
     events_for_display = []
 
+    print(os.environ['GOOGLE_CLIENT_ID'])
+    print(os.environ['GOOGLE_CLIENT_SECRET'])
+    print(client.access_token)
+
+    print(current_user.is_authenticated)
+
+
     if current_user.is_authenticated:
 
+        
+        
+        
         credentials = Credentials(
                 token=client.access_token,
                 token_uri="https://www.googleapis.com/oauth2/v3/token", 
@@ -211,12 +220,11 @@ def calendar():
 
             # Call the Calendar API
             now = datetime.datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
-            print('Getting the upcoming 10 events')
+            print('Getting the upcoming events')
             events_result = service.events().list(calendarId='primary', timeMin=now,
-                                                maxResults=40, singleEvents=True,
+                                                maxResults=20, singleEvents=True,
                                                 orderBy='startTime').execute()
             events = events_result.get('items', [])
-
             
             print(events)
 
@@ -358,28 +366,28 @@ def callback():
             client_secret=os.environ['GOOGLE_CLIENT_SECRET'],
         )
 
-    try:
-        service = build('calendar', 'v3', credentials=credentials)
+    # try:
+    #     service = build('calendar', 'v3', credentials=credentials)
 
-        # Call the Calendar API
-        now = datetime.datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
-        print('Getting the upcoming 10 events')
-        events_result = service.events().list(calendarId='primary', timeMin=now,
-                                              maxResults=10, singleEvents=True,
-                                              orderBy='startTime').execute()
-        events = events_result.get('items', [])
+    #     # Call the Calendar API
+    #     now = datetime.datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
+    #     print('Getting the upcoming 10 events')
+    #     events_result = service.events().list(calendarId='primary', timeMin=now,
+    #                                           maxResults=10, singleEvents=True,
+    #                                           orderBy='startTime').execute()
+    #     events = events_result.get('items', [])
 
-        if not events:
-            print('No upcoming events found.')
-            return redirect(url_for("home"))
+    #     if not events:
+    #         print('No upcoming events found.')
+    #         return redirect(url_for("home"))
 
-        # Prints the start and name of the next 10 events
-        for event in events:
-            start = event['start'].get('dateTime', event['start'].get('date'))
-            print(start, event['summary'])
+    #     # Prints the start and name of the next 10 events
+    #     for event in events:
+    #         start = event['start'].get('dateTime', event['start'].get('date'))
+    #         print(start, event['summary'])
 
-    except HttpError as error:
-        print('An error occurred: %s' % error)
+    # except HttpError as error:
+    #     print('An error occurred: %s' % error)
 
 
     # Now that you have tokens (yay) let's find and hit the URL
