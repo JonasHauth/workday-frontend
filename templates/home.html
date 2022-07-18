@@ -1,14 +1,6 @@
 {% extends 'layout.html' %}
 
-
-
 {% block css %}
-
-<!-- Paddle Payment-->
-<script src="https://cdn.paddle.com/paddle/paddle.js"></script>
-<script type="text/javascript">
-	Paddle.Setup({ vendor: 743086 });
-</script>
 {% endblock %}
 
 {% block content %}
@@ -29,10 +21,12 @@
           <p class="card-text" style=" white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 400ch;">{{ space.description }}</p>
           <p>{{ space.price }} </p>
           <p>{{ space.street }}<br>{{ space.city }}</p>
-          <div role="button" id="payonetime" data-toggle="modal" data-target="#bezahlen" 
-               data-name="{{ space.name }}" data-beschreibung="{{ space.description }}" >
-               Bezahlen
-          </div>
+
+          <!-- Modal Button / see Modal Code on the bottom of the page -->
+          <button type="button" id="payonetime" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+            Bezahlen
+          </button>
+          
           
         </div>
       </div>
@@ -49,133 +43,124 @@
 
     <div id='calendar' class="container" style="margin-bottom: 100px !important"></div>
 
-    <script>
+      <script>
+      document.addEventListener("DOMContentLoaded", function (info) {
+        var calendarEl = document.getElementById("calendar");
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: "listWeek",
+        locale: 'de',
+        contentHeight: 'auto',
 
-      document.addEventListener("DOMContentLoaded", function () {
-      var calendarEl = document.getElementById("calendar");
-      var calendar = new FullCalendar.Calendar(calendarEl, {
-      initialView: "listWeek",
-      locale: 'de',
-      contentHeight: 'auto',
-
-      headerToolbar: 
-      {
-        left: "prev,next today",
-        center: "title",
-        right: "dayGridMonth,timeGridWeek,timeGridDay, listWeek",
-      },
-
-      selectable: true,
-      selectHelper: true,
-      select: function(start, end, allDay)
-      {
-        var title = prompt ("Enter Event Titel");
-        if (title)
+        headerToolbar: 
         {
-          
-          var start = $.fullCalendar.formatDate(start, "Y-MM-DD HH:mm:ss");
-          var end = $.fullCalendar.formatDate(end, "Y-MM-DD HH:mm:ss");
+          left: "prev,next today",
+          center: "title",
+          right: "dayGridMonth,timeGridWeek,timeGridDay, listWeek",
+        },
+
+        selectable: true,
+        // selectHelper: true,
+        select : function(info) 
+        {
+          var title = prompt ("Enter Event Titel");
+          if (title)
+          { 
+            var start = info.startStr;
+            var end = info.endStr;
+            $.ajax
+            (
+              {
+                url:"/calendar/insert",
+                type:"POST",
+                data:{title:title, start:start, end:end},
+                success:function(data)
+                {
+                  //alert(data)
+                    calendar.refetchEvents();
+                    
+                    alert("Added Successfully");
+                    window.location.replace("/calendar");
+                    
+                  }
+              }
+            )
+
+          }
+        },
+
+        editable: true,
+
+        eventResize: function(info)
+        {
+          var start = info.event.dateStr.formatDate(start, "Y-MM-DD HH:mm:ss");
+          var end = info.event.endStr.formatDate(start, "Y-MM-DD HH:mm:ss");
+          var title = info.event.title;
+          var id = info.event.id;
           $.ajax
           (
             {
-              url:"/calendar/insert",
+              url:"/calendar/update",
               type:"POST",
-              data:{title:title, start:start, end:end},
-              success:function(data)
-               {
-                 //alert(data)
-                  alert("Added Successfully");
-                  window.location.replace("/");
-                }
+              data:{title:title, start:start, end:end, id:id},
+              success:function()
+              {
+                alert('Event Update');
+              }
             }
           )
-
-        }
-      },
-
-      editable: true,
-
-      eventResize:function(event)
-      {
-        var start = $.fullCalendar.formatDate(event.start, "Y-MM-DD HH:mm:ss");
-        var end = $.fullCalendar.formatDate(event.end, "Y-MM-DD HH:mm:ss");
-        var title = event.title;
-        var id = event.id;
-        $.ajax
-        (
-          {
-            url:"/calendar/update",
-            type:"POST",
-            data:{title:title, start:start, end:end, id:id},
-            success:function()
-            {
-              calendar.fullCalendar('refetchEvents');
-              alert('Event Update');
-            }
-          }
-        )
-      },
-      
-      eventDrop:function(event)
-      {
-        var start = $.fullCalendar.formatDate(event.start, "Y-MM-DD HH:mm:ss");
-        var end = $.fullCalendar.formatDate(event.end, "Y-MM-DD HH:mm:ss");
-        var title = event.title;
-        var id = event.id;
-        $.ajax
-        (
-          {
-            url:"/calendar/update",
-            type:"POST",
-            data:{title:title, start:start, end:end, id:id},
-            success:function()
-            {
-              calendar.fullCalendar('refetchEvents');
-              alert("Event Updated");
-            }
-          }
-        );
-      },
-  
-      eventClick:function(event)
-      {
-        if(confirm("Are you sure you want to remove it?"))
+        },
+        
+        eventDrop: function(info)
         {
+          var start = info.event.dateStr.formatDate(start, "Y-MM-DD HH:mm:ss");
+          var end = info.event.endStr.formatDate(start, "Y-MM-DD HH:mm:ss");
+          var title = info.event.title;
           var id = event.id;
           $.ajax
           (
             {
-              url:"/calendar/delete",
+              url:"/calendar/update",
               type:"POST",
-              data:{id:id},
+              data:{title:title, start:start, end:end, id:id},
               success:function()
               {
-                calendar.fullCalendar('refetchEvents');
-                alert("Event Removed");
+                alert("Event Updated");
               }
             }
-          )
-        }
-      },
-  
-
-      events : 
-      [
-        {% for event in events %}
-        {
-          title : '{{event.title}}',
-          start : '{{event.start}}',
+          );
         },
-        {% endfor %}
-      ],
-    
-    });
-    
-    calendar.render();
-    });
 
-    </script>  
+        eventClick: function(info)
+        {
+          if(confirm("Are you sure you want to remove it?"))
+          {
+            var id = info.event.id;
+            $.ajax
+            (
+              {
+                url:"/calendar/delete",
+                type:"POST",
+                data:{id:id},
+                success:function()
+                {
+                  alert("Event Removed");
+                  window.location.replace("/calendar");
+                }
+              }
+            )
+          }
+        },
 
+
+        events: [{% for event in events %}{ id : '{{event.id}}', title : '{{event.title}}', start : '{{event.start}}', end : '{{event.end}}', }, {% endfor %}],
+
+
+      });
+
+      calendar.render();
+      });
+
+</script> 
 
 
 
@@ -186,64 +171,50 @@
 
 
 <!-- CHECKOUT MODAL 1  / HTML -->   
-
-<div class="modal fade" id="bezahlen" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style="z-index: 10000000000;">
-  <div class="modal-dialog" role="document">
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" style="z-index: 10000000000 !important;">
+  <div class="modal-dialog">
     <div class="modal-content">
-
       <div class="modal-header">
-        <h3 class="modal-title" id="exampleModalLabel">CHECKOUT </h3>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" style="color: #aaa !important;">x</span></button>
+        <h5 class="modal-title" id="staticBackdropLabel">CHECKOUT</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" style="color: #aaa !important;">x</span></button> 
       </div>
-
       <div class="modal-body">
-        <form id="pre-checkout" style="margin-top: 40px;">
+        <form id="pre-checkout" style="margin-top: 15px;">
           <input id="name" type="text" value="" placeholder="Name" style="width:100%; margin-bottom: 8px;">
           <input id="useremail" type="text" value="" placeholder="E-Mail-Adresse" style="width:100%">   
         </form>
        <div class="checkout-container"></div>
       </div>
-
       <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
       </div>
-
     </div>
   </div>
-  </div>
+</div>
 <!-- CHECKOUT MODAL / ENDE-->    
 
-<!-- CHECKOUT MODAL 1 /JAVASCRIPT -->   
-<script>
+<!-- CHECKOUT MODAL 1 /JAVASCRIPT -->  
+<!-- Paddle Payment-->
+<script src="https://cdn.paddle.com/paddle/paddle.js"></script>
+<script type="text/javascript">
 
-  //Paddle Payment ------------
-  
-    Paddle.Setup
-    (
-      {
-        vendor: 743086,         
-      }
-    );
-    
-  
-  
-  //Paddle -- Pre-Checkout
-  var form = document.getElementById('pre-checkout');
-  
+ //Paddle Payment ------------
+ Paddle.Setup({ vendor: 743086 });
   
   //Paddle --- Open Paddle Checkout  
-      Paddle.Checkout.open({
-        method: 'inline',
-        product: 780653,  
-        email: 'lara.kresiz@gmx.de', // form.useremail.value
-        country: 'DE',
-        postcode: '76185',
-        allowQuantity: false,
-        disableLogout: true,
-        success: 'https://127.0.0.1:5000/calendar', 
-        frameTarget: 'checkout-container',
-        frameInitialHeight: 416,
-        frameStyle: 'width:100%; min-width:312px; background-color: transparent; border: none;'    
-      });
+  Paddle.Checkout.open({
+    method: 'inline',
+    product: 780653,  
+    email: 'lara.kresiz@gmx.de', // form.useremail.value
+    country: 'DE',
+    postcode: '76185',
+    allowQuantity: false,
+    disableLogout: true,
+    success: 'https://127.0.0.1:5000/calendar/insertspace/', 
+    frameTarget: 'checkout-container',
+    frameInitialHeight: 416,
+    frameStyle: 'width:100%; min-width:312px; background-color: transparent; border: none;'    
+  });
   
 </script>
   

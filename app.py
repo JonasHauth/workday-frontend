@@ -233,6 +233,84 @@ def calendar():
 
 
 
+# Space buchen und in den Kalender eintragen
+@app.route("/calendar/insertspace/",methods=["POST","GET"])
+def insertspaceincalender():
+
+    if request.method == 'GET':
+
+        print("test")
+        
+        try:
+            summary = "SteamWork"
+            start = "2022-07-20T08:00:00+02:00"
+            dtobj = datetime.datetime.strptime(start, "%Y-%m-%dT%H:%M:%S%z")
+            dtstart = dtobj.isoformat()
+
+            end = "2022-07-20T17:00:00+02:00"
+            dtobj = datetime.datetime.strptime(end, "%Y-%m-%dT%H:%M:%S%z")
+            dtend = dtobj.isoformat()
+
+            
+        except:
+            print("Converting failed") 
+
+        dictToSend = {
+            'token': client.access_token,
+            'token_uri': "https://www.googleapis.com/oauth2/v3/token",
+            'client_id': os.environ['GOOGLE_CLIENT_ID'],
+            'client_secret': os.environ['GOOGLE_CLIENT_SECRET'],
+            'summary': summary,
+            'start': dtstart,
+            'end': dtend,
+        }
+
+
+        # Sync google calendars
+        res = requests.post('http://127.0.0.1:8080/calendar', json=dictToSend)
+
+        events_for_display = []
+
+        try:
+            # Get all entries
+            res = requests.get('http://127.0.0.1:8080/calendar')
+
+            events_for_display_change = res.json()
+
+            for event in events_for_display_change:
+                id = event['_id']
+                summary = event['summary']
+                start = event['start']
+                end = event['end']
+                
+                event_dict = {
+                    "id": id,
+                    "title": summary,
+                    "start": start,
+                    "end": end
+                }
+                events_for_display.append(event_dict)
+                
+                print(event_dict)
+
+
+        except HttpError as error:
+            print('An error occurred: %s' % error)
+
+        return render_template(
+            "calendar.html",
+            login=current_user.is_authenticated,
+            events=events_for_display,
+            title="workday",
+            description="Organisiere deinen Arbeitstag mit Workday.",
+        )
+
+
+
+
+
+
+
 
 # Kalendereintrag hinzufügen
 @app.route("/calendar/insert",methods=["POST","GET"])
@@ -357,14 +435,6 @@ def profil():
             description="Organisiere deinen Arbeitstag mit Workday.",
         )
         
-        # return (
-        #     "<p>Hello, {}! You're logged in! Email: {}</p>"
-        #     "<div><p>Google Profile Picture:</p>"
-        #     '<img src="{}" alt="Google profile pic"></img></div>'
-        #     '<a class="button" href="/logout">Logout</a>'.format(
-        #         current_user.name, current_user.email, current_user.profile_pic
-        #     )
-        # )
     else:
         return render_template(
             "login.html",
