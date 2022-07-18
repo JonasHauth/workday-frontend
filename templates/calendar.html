@@ -68,7 +68,6 @@
             data:{title:title, start:start, end:end, id:id},
             success:function()
             {
-              calendar.fullCalendar('refetchEvents');
               alert('Event Update');
             }
           }
@@ -89,7 +88,6 @@
             data:{title:title, start:start, end:end, id:id},
             success:function()
             {
-              calendar.fullCalendar('refetchEvents');
               alert("Event Updated");
             }
           }
@@ -109,7 +107,6 @@
               data:{id:id},
               success:function()
               {
-                calendar.fullCalendar('refetchEvents');
                 alert("Event Removed");
               }
             }
