@@ -262,6 +262,15 @@ def calendar():
 
 
 
+@app.route("/calendartest", methods=['GET', 'POST'])
+def calendartest():
+    return render_template(
+            "calendartest.html",
+            login=current_user.is_authenticated,
+            title="workday",
+            description="Organisiere deinen Arbeitstag mit Workday.",
+        )
+
 
 
 # Kalendereintrag hinzufügen
