@@ -38,6 +38,7 @@
        data:{title:title, start:start, end:end},
        success:function(data)
        {
+        calendar.fullCalendar('refetchEvents');
         alert("Added Successfully");
        }
       })

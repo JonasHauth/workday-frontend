@@ -9,7 +9,7 @@
 
     <script>
 
-    document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", function (info) {
       var calendarEl = document.getElementById("calendar");
       var calendar = new FullCalendar.Calendar(calendarEl, {
       initialView: "dayGridMonth",
@@ -29,7 +29,7 @@
         var title = prompt ("Enter Event Titel");
         if (title)
         { 
-          var start = info.dateStr;
+          var start = info.startStr;
           var end = info.endStr;
           $.ajax
           (
@@ -40,8 +40,9 @@
               success:function(data)
                {
                  //alert(data)
+                  calendar.fullCalendar('refetchEvents');
                   alert("Added Successfully");
-                  window.location.replace("/");
+                  
                 }
             }
           )
@@ -53,8 +54,8 @@
 
       eventResize: function(info)
       {
-        var start = info.event.dateStr;
-        var end = info.event.endStr;
+        var start = info.event.dateStr.formatDate(start, "Y-MM-DD HH:mm:ss");
+        var end = info.event.endStr.formatDate(start, "Y-MM-DD HH:mm:ss");
         var title = info.event.title;
         var id = info.event.id;
         $.ajax
@@ -74,8 +75,8 @@
       
       eventDrop: function(info)
       {
-        var start = info.event.dateStr;
-        var end = info.event.endStr;
+        var start = info.event.dateStr.formatDate(start, "Y-MM-DD HH:mm:ss");
+        var end = info.event.endStr.formatDate(start, "Y-MM-DD HH:mm:ss");
         var title = info.event.title;
         var id = event.id;
         $.ajax
