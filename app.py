@@ -127,54 +127,26 @@ def home():
             )
 
         try:
-            service = build('calendar', 'v3', credentials=credentials)
-
-            # Call the Calendar API
-            now = datetime.datetime.utcnow().isoformat() + 'Z' #indicates UTC time
-            print(now)
-            print('Getting the upcoming 10 events')
-            events_result = service.events().list(calendarId='primary', timeMin=now,
-                                                maxResults=10, singleEvents=True,
-                                                orderBy='startTime').execute()
-            events = events_result.get('items', [])
-
             
-            
+            dictToSend = {
+                'token': client.access_token,
+                'token_uri': "https://www.googleapis.com/oauth2/v3/token",
+                'client_id': os.environ['GOOGLE_CLIENT_ID'],
+                'client_secret': os.environ['GOOGLE_CLIENT_SECRET']
+            }
 
-            # Gets the start, end and name of the next 20 events
-            for event in events:
-                summary = event['summary']
-                start = event['start'].get('dateTime')
-                end = event['end'].get('dateTime')
-                    
-                event_dict = {
-                    "title": summary,
-                    "start": start,
-                    "end": end
-                }
-                events_for_display.append(event_dict)
+            # Sync google calendars
+            res = requests.post('http://127.0.0.1:8080/sync/google', json=dictToSend)
+            print("Sync calendar request " + str(res.status_code))
 
-                print("Test")
-
-                print(event_dict)
+            # Get all entries
+            res = requests.get('http://127.0.0.1:8080/calendar')
+            print("Get calendar request " + str(res.status_code))
+            events_for_display = res.json()
 
         except HttpError as error:
             print('An error occurred: %s' % error)
 
-
-        # try:
-        #     service = build('calendar', 'v3', credentials=credentials)
-
-        #     event = {
-        #         'summary': 'Test Event',
-        #         'start': {
-        #             'dateTime': datetime.datetime.utcnow().isoformat() + 'Z',
-        #             'timeZone': 'Europe/Berlin'
-        #         }
-        #     }
-
-        # except HttpError as error:
-        #     print('An error occurred: %s' % error)
 
         return render_template(
             "home.html",
@@ -196,18 +168,8 @@ def calendar():
 
     events_for_display = []
 
-    print(os.environ['GOOGLE_CLIENT_ID'])
-    print(os.environ['GOOGLE_CLIENT_SECRET'])
-    print(client.access_token)
-
-    print(current_user.is_authenticated)
-
-
     if current_user.is_authenticated:
 
-        
-        
-        
         credentials = Credentials(
                 token=client.access_token,
                 token_uri="https://www.googleapis.com/oauth2/v3/token", 
@@ -216,35 +178,22 @@ def calendar():
             )
 
         try:
-            service = build('calendar', 'v3', credentials=credentials)
-
-            # Call the Calendar API
-            now = datetime.datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
-            print('Getting the upcoming events')
-            events_result = service.events().list(calendarId='primary', timeMin=now,
-                                                maxResults=20, singleEvents=True,
-                                                orderBy='startTime').execute()
-            events = events_result.get('items', [])
             
-            print(events)
+            dictToSend = {
+                'token': client.access_token,
+                'token_uri': "https://www.googleapis.com/oauth2/v3/token",
+                'client_id': os.environ['GOOGLE_CLIENT_ID'],
+                'client_secret': os.environ['GOOGLE_CLIENT_SECRET']
+            }
 
-            # If no events don't procced
-            if events:
+            # Sync google calendars
+            res = requests.post('http://127.0.0.1:8080/sync/google', json=dictToSend)
+            print('response from server:',res.text)
 
-                # Gets the start, end and name of the next 20 events
-                for event in events:
-                    summary = event['summary']
-                    start = event['start'].get('dateTime')
-                    end = event['end'].get('dateTime')
-                    
-                    event_dict = {
-                        "title": summary,
-                        "start": start,
-                        "end": end
-                    }
-                    events_for_display.append(event_dict)
-                    
-                    print(event_dict)
+            # Get all entries
+            res = requests.get('http://127.0.0.1:8080/calendar')
+            print('response from server:',res.text)
+            events_for_display = res.json()
 
         except HttpError as error:
             print('An error occurred: %s' % error)
@@ -347,18 +296,8 @@ def calendartest():
 
     events_for_display = []
 
-    print(os.environ['GOOGLE_CLIENT_ID'])
-    print(os.environ['GOOGLE_CLIENT_SECRET'])
-    print(client.access_token)
-
-    print(current_user.is_authenticated)
-
-
     if current_user.is_authenticated:
 
-        
-        
-        
         credentials = Credentials(
                 token=client.access_token,
                 token_uri="https://www.googleapis.com/oauth2/v3/token", 
@@ -367,35 +306,42 @@ def calendartest():
             )
 
         try:
-            service = build('calendar', 'v3', credentials=credentials)
-
-            # Call the Calendar API
-            now = datetime.datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
-            print('Getting the upcoming events')
-            events_result = service.events().list(calendarId='primary', timeMin=now,
-                                                maxResults=20, singleEvents=True,
-                                                orderBy='startTime').execute()
-            events = events_result.get('items', [])
             
-            print(events)
+            dictToSend = {
+                'token': client.access_token,
+                'token_uri': "https://www.googleapis.com/oauth2/v3/token",
+                'client_id': os.environ['GOOGLE_CLIENT_ID'],
+                'client_secret': os.environ['GOOGLE_CLIENT_SECRET']
+            }
 
-            # If no events don't procced
-            if events:
+            # Sync google calendars
+            res = requests.post('http://127.0.0.1:8080/sync/google', json=dictToSend)
 
-                # Gets the start, end and name of the next 20 events
-                for event in events:
-                    summary = event['summary']
-                    start = event['start'].get('dateTime')
-                    end = event['end'].get('dateTime')
-                    
-                    event_dict = {
-                        "title": summary,
-                        "start": start,
-                        "end": end
-                    }
-                    events_for_display.append(event_dict)
-                    
-                    print(event_dict)
+
+            # Get all entries
+            res = requests.get('http://127.0.0.1:8080/calendar')
+
+            events_for_display_change = res.json()
+
+
+            for event in events_for_display_change:
+                id = event['_id']
+                summary = event['summary']
+                start = event['start']
+                end = event['end']
+                
+                event_dict = {
+                    "_id": id,
+                    "title": summary,
+                    "start": start,
+                    "end": end
+                }
+                events_for_display.append(event_dict)
+                
+                print(event_dict)
+
+
+
 
         except HttpError as error:
             print('An error occurred: %s' % error)
@@ -416,15 +362,35 @@ def calendartest():
 # Kalendereintrag hinzufügen
 @app.route("/calendar/insert",methods=["POST","GET"])
 def insert():
-    
+
     if request.method == 'POST':
-        title = request.form['title']
-        start = request.form['start']
-        end = request.form['end']
-        print(title)     
-        print(start)        
+        summary = request.form['summary']
         
-    return redirect(url_for("home"))
+        start = request.form['start']
+        dtobj = datetime.datetime.strptime(start, "%Y-%m-%d %H:%M:%S")
+        dtstart = dtobj.isoformat() + '+02:00'
+
+        end = request.form['end']
+        dtobj = datetime.datetime.strptime(end, "%Y-%m-%d %H:%M:%S")
+        dtend = dtobj.isoformat() + '+02:00'
+
+        dictToSend = {
+            'token': client.access_token,
+            'token_uri': "https://www.googleapis.com/oauth2/v3/token",
+            'client_id': os.environ['GOOGLE_CLIENT_ID'],
+            'client_secret': os.environ['GOOGLE_CLIENT_SECRET'],
+            'summary': summary,
+            'start': dtstart,
+            'end': dtend,
+            'email': current_user.email
+        }
+
+        # Sync google calendars
+        res = requests.post('http://127.0.0.1:8080/calendar', json=dictToSend)
+
+        return jsonify("Success")
+    
+
 
 # Kalendereintrag editieren
 @app.route("/calendar/update",methods=["POST","GET"])
@@ -434,21 +400,23 @@ def update():
         start = request.form['start']
         end = request.form['end']
         id = request.form['id']
-        print(title)     
-        print(start)  
+        
+        
 
-    return redirect(url_for("home"))   
+
+    return jsonify("Success")
 
 # Kalendereintrag löschen
 @app.route("/calendar/delete",methods=["POST","GET"])
 def ajax_delete():
+
 
     if request.method == 'POST':
         getid = request.form['id']
         print(getid)
 
 
-    return redirect(url_for("home")) 
+    return jsonify("Success")
 
 
 
@@ -456,16 +424,26 @@ def ajax_delete():
 @app.route("/profil")
 def profil():
     if current_user.is_authenticated:
-        return (
-            "<p>Hello, {}! You're logged in! Email: {}</p>"
-            "<div><p>Google Profile Picture:</p>"
-            '<img src="{}" alt="Google profile pic"></img></div>'
-            '<a class="button" href="/logout">Logout</a>'.format(
-                current_user.name, current_user.email, current_user.profile_pic
-            )
+        return render_template(
+            "successfullogin.html",
+            title="workday",
+            description="Organisiere deinen Arbeitstag mit Workday.",
         )
+        
+        # return (
+        #     "<p>Hello, {}! You're logged in! Email: {}</p>"
+        #     "<div><p>Google Profile Picture:</p>"
+        #     '<img src="{}" alt="Google profile pic"></img></div>'
+        #     '<a class="button" href="/logout">Logout</a>'.format(
+        #         current_user.name, current_user.email, current_user.profile_pic
+        #     )
+        # )
     else:
-        return '<a class="button" href="/login">Google Login</a>'
+        return render_template(
+            "login.html",
+            title="workday",
+            description="Organisiere deinen Arbeitstag mit Workday.",
+        )
 
 @app.route("/login")
 def login():
@@ -514,29 +492,6 @@ def callback():
             client_id=os.environ['GOOGLE_CLIENT_ID'],
             client_secret=os.environ['GOOGLE_CLIENT_SECRET'],
         )
-
-    # try:
-    #     service = build('calendar', 'v3', credentials=credentials)
-
-    #     # Call the Calendar API
-    #     now = datetime.datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
-    #     print('Getting the upcoming 10 events')
-    #     events_result = service.events().list(calendarId='primary', timeMin=now,
-    #                                           maxResults=10, singleEvents=True,
-    #                                           orderBy='startTime').execute()
-    #     events = events_result.get('items', [])
-
-    #     if not events:
-    #         print('No upcoming events found.')
-    #         return redirect(url_for("home"))
-
-    #     # Prints the start and name of the next 10 events
-    #     for event in events:
-    #         start = event['start'].get('dateTime', event['start'].get('date'))
-    #         print(start, event['summary'])
-
-    # except HttpError as error:
-    #     print('An error occurred: %s' % error)
 
 
     # Now that you have tokens (yay) let's find and hit the URL
