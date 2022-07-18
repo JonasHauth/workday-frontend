@@ -9,7 +9,7 @@
 
     <script>
 
-document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", function () {
       var calendarEl = document.getElementById("calendar");
       var calendar = new FullCalendar.Calendar(calendarEl, {
       initialView: "dayGridMonth",
@@ -23,15 +23,14 @@ document.addEventListener("DOMContentLoaded", function () {
       },
 
       selectable: true,
-      selectHelper: true,
-      select: function(start, end, allDay)
+      // selectHelper: true,
+      select : function(info) 
       {
         var title = prompt ("Enter Event Titel");
         if (title)
-        {
-          
-          var start = calendar.fullCalendar.formatDate(start, "Y-MM-DD HH:mm:ss");
-          var end = calendar.fullCalendar.formatDate(end, "Y-MM-DD HH:mm:ss");
+        { 
+          var start = info.dateStr;
+          var end = info.endStr;
           $.ajax
           (
             {
@@ -52,12 +51,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
       editable: true,
 
-      eventResize:function(event)
+      eventResize: function(info)
       {
-        var start = calendar.formatDate(event.start, "Y-MM-DD HH:mm:ss");
-        var end = calendar.formatDate(event.end, "Y-MM-DD HH:mm:ss");
-        var title = event.title;
-        var id = event.id;
+        var start = info.event.dateStr;
+        var end = info.event.endStr;
+        var title = info.event.title;
+        var id = info.event.id;
         $.ajax
         (
           {
@@ -73,11 +72,11 @@ document.addEventListener("DOMContentLoaded", function () {
         )
       },
       
-      eventDrop:function(event)
+      eventDrop: function(info)
       {
-        var start = calendar.formatDate(event.start, "Y-MM-DD HH:mm:ss");
-        var end = calendar.formatDate(event.end, "Y-MM-DD HH:mm:ss");
-        var title = event.title;
+        var start = info.event.dateStr;
+        var end = info.event.endStr;
+        var title = info.event.title;
         var id = event.id;
         $.ajax
         (
@@ -94,11 +93,11 @@ document.addEventListener("DOMContentLoaded", function () {
         );
       },
   
-      eventClick:function(event)
+      eventClick: function(info)
       {
         if(confirm("Are you sure you want to remove it?"))
         {
-          var id = event.id;
+          var id = info.event.id;
           $.ajax
           (
             {
@@ -116,15 +115,8 @@ document.addEventListener("DOMContentLoaded", function () {
       },
   
 
-      events : 
-      [
-        {% for event in events %}
-        {
-          title : '{{event.title}}',
-          start : '{{event.start}}',
-        },
-        {% endfor %}
-      ],
+      events: [{% for event in events %}{ id : '{{event.id}}', title : '{{event.title}}', start : '{{event.start}}', end : '{{event.end}}', }, {% endfor %}],
+    
     
     });
     
