@@ -1,9 +1,14 @@
+{% extends 'layout.html' %}
+
 {% block css %}
   <link href="{{ url_for('static', filename='css/login.css') }}" rel="stylesheet">
 {% endblock %}
  
+{% block content %}
 <p>Welcome, {{ current_user.name }}!</p>
 <p>You're logged in with your Google Account:</p>
 <p>{{ current_user.email }}</p>
 <img src="{{ current_user.profile_pic }}" alt="Google profile pic"></img>
-<a class="btn btn-primary" href="{{ url_for('home') }}" role="button">Logout Google Account</a>
+<a class="btn btn-primary" href="{{ url_for('logout') }}" role="button">Logout Google Account</a>
+
+{% endblock %}
