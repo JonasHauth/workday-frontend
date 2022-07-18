@@ -40,9 +40,6 @@
               success:function(data)
                {
                  //alert(data)
-                  calendar.refetchEvents();
-                  
-                  alert("Added Successfully");
                   window.location.replace("/calendar");
                   
                 }
@@ -56,15 +53,15 @@
 
       eventResize: function(info)
       {
-        var start = info.event.dateStr.formatDate(start, "Y-MM-DD HH:mm:ss");
-        var end = info.event.endStr.formatDate(start, "Y-MM-DD HH:mm:ss");
+        var start = info.event.startStr;
+        var end = info.event.endStr;
         var title = info.event.title;
         var id = info.event.id;
         $.ajax
         (
           {
             url:"/calendar/update",
-            type:"POST",
+            type:"PUT",
             data:{title:title, start:start, end:end, id:id},
             success:function()
             {
@@ -76,15 +73,15 @@
       
       eventDrop: function(info)
       {
-        var start = info.event.dateStr.formatDate(start, "Y-MM-DD HH:mm:ss");
-        var end = info.event.endStr.formatDate(start, "Y-MM-DD HH:mm:ss");
+        var start = info.event.startStr;
+        var end = info.event.endStr;
         var title = info.event.title;
-        var id = event.id;
+        var id = info.event.id;
         $.ajax
         (
           {
             url:"/calendar/update",
-            type:"POST",
+            type:"PUT",
             data:{title:title, start:start, end:end, id:id},
             success:function()
             {
@@ -103,11 +100,10 @@
           (
             {
               url:"/calendar/delete",
-              type:"POST",
+              type:"DELETE",
               data:{id:id},
               success:function()
               {
-                alert("Event Removed");
                 window.location.replace("/calendar");
               }
             }

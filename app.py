@@ -229,12 +229,9 @@ def calendar():
         return redirect(url_for("login"))
 
 
-
-
-
-
-
-# Kalendereintrag hinzufügen
+"""
+Kalendereintrag hinzufügen
+"""
 @app.route("/calendar/insert",methods=["POST","GET"])
 def insert():
 
@@ -277,8 +274,6 @@ def insert():
             'end': dtend,
         }
 
-
-        # Sync google calendars
         res = requests.post('http://127.0.0.1:8080/calendar', json=dictToSend)
 
         events_for_display = []
@@ -319,35 +314,90 @@ def insert():
     
 
 
-# Kalendereintrag editieren
-@app.route("/calendar/update",methods=["POST","GET"])
+"""
+Kalendereintrag editieren
+"""
+@app.route("/calendar/update",methods=["PUT","GET"])
 def update():
-    if request.method == 'POST':
-        title = request.form['title']
-        start = request.form['start']
-        end = request.form['end']
-        id = request.form['id']
-        
+    if request.method == 'PUT':       
+        try:
+            summary = request.form['title']
+            id = request.form['id']
+
+            start = request.form['start']
+            if len(start) > 12:
+                dtobj = datetime.datetime.strptime(start, "%Y-%m-%dT%H:%M:%S%z")
+                dtstart = dtobj.isoformat()
+
+            else:
+                start = start + "T00:00:00+02:00"
+                dtobj = datetime.datetime.strptime(start, "%Y-%m-%dT%H:%M:%S%z")
+                dtstart = dtobj.isoformat()
+
+            end = request.form['end']
+            if len(end) > 12:
+           
+                dtobj = datetime.datetime.strptime(end, "%Y-%m-%dT%H:%M:%S%z")
+                dtend = dtobj.isoformat()
+
+            else: 
+                end = end + "T00:00:00+02:00"
+                dtobj = datetime.datetime.strptime(end, "%Y-%m-%dT%H:%M:%S%z")
+                dtend = dtobj.isoformat()
+
+        except:
+            print("Converting failed") 
+
+        dictToSend = {
+            'token': client.access_token,
+            'token_uri': "https://www.googleapis.com/oauth2/v3/token",
+            'client_id': os.environ['GOOGLE_CLIENT_ID'],
+            'client_secret': os.environ['GOOGLE_CLIENT_SECRET'],
+            'id': id,
+            'summary': summary,
+            'start': dtstart,
+            'end': dtend,
+        }
+
+        res = requests.put('http://127.0.0.1:8080/calendar', json=dictToSend)
+
         
 
 
     return jsonify("Success")
 
-# Kalendereintrag löschen
-@app.route("/calendar/delete",methods=["POST","GET"])
+"""
+Kalendereintrag löschen
+"""
+@app.route("/calendar/delete",methods=["POST","DELETE"])
 def ajax_delete():
 
 
-    if request.method == 'POST':
-        getid = request.form['id']
-        print(getid)
+    if request.method == 'DELETE':
+        try:            
+            id = request.form['id']
+            print(id)
+        except:
+            print("Converting failed") 
+
+        dictToSend = {
+            'token': client.access_token,
+            'token_uri': "https://www.googleapis.com/oauth2/v3/token",
+            'client_id': os.environ['GOOGLE_CLIENT_ID'],
+            'client_secret': os.environ['GOOGLE_CLIENT_SECRET'],
+            'id': id
+        }
+
+        res = requests.delete('http://127.0.0.1:8080/calendar', json=dictToSend)
 
 
     return jsonify("Success")
 
 
 
-
+"""
+Profil anzeigen
+"""
 @app.route("/profil")
 def profil():
     if current_user.is_authenticated:
