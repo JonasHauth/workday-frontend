@@ -1,0 +1,9 @@
+{% block css %}
+  <link href="{{ url_for('static', filename='css/login.css') }}" rel="stylesheet">
+{% endblock %}
+ 
+<div class="container">
+<p>Synchronisiere deinen Google Kalender mit Workday</p>
+<button class="btn btn-primary" type="submit">Button</button>
+<a class="btn btn-primary" href="{{ url_for('/login') }}" role="button">Login Google Account</a>
+</div>
