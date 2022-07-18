@@ -262,14 +262,154 @@ def calendar():
 
 
 
-@app.route("/calendartest", methods=['GET', 'POST'])
-def calendartest():
-    return render_template(
-            "calendartest.html",
+
+
+@app.route("/calendart", methods=['GET', 'POST'])
+def calendart():
+    """Landing page route."""
+
+    events_for_display = []
+
+    print(os.environ['GOOGLE_CLIENT_ID'])
+    print(os.environ['GOOGLE_CLIENT_SECRET'])
+    print(client.access_token)
+
+    print(current_user.is_authenticated)
+
+
+    if current_user.is_authenticated:
+
+        
+        
+        
+        credentials = Credentials(
+                token=client.access_token,
+                token_uri="https://www.googleapis.com/oauth2/v3/token", 
+                client_id=os.environ['GOOGLE_CLIENT_ID'],
+                client_secret=os.environ['GOOGLE_CLIENT_SECRET'],
+            )
+
+        try:
+            service = build('calendar', 'v3', credentials=credentials)
+
+            # Call the Calendar API
+            now = datetime.datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
+            print('Getting the upcoming events')
+            events_result = service.events().list(calendarId='primary', timeMin=now,
+                                                maxResults=20, singleEvents=True,
+                                                orderBy='startTime').execute()
+            events = events_result.get('items', [])
+            
+            print(events)
+
+            # If no events don't procced
+            if events:
+
+                # Gets the start, end and name of the next 20 events
+                for event in events:
+                    summary = event['summary']
+                    start = event['start'].get('dateTime')
+                    end = event['end'].get('dateTime')
+                    
+                    event_dict = {
+                        "title": summary,
+                        "start": start,
+                        "end": end
+                    }
+                    events_for_display.append(event_dict)
+                    
+                    print(event_dict)
+
+        except HttpError as error:
+            print('An error occurred: %s' % error)
+
+        return render_template(
+            "calendart.html",
             login=current_user.is_authenticated,
+            events=events_for_display,
             title="workday",
             description="Organisiere deinen Arbeitstag mit Workday.",
         )
+
+    else:
+        return redirect(url_for("login"))
+
+
+
+
+
+
+
+
+@app.route("/calendartest", methods=['GET', 'POST'])
+def calendartest():
+    """Landing page route."""
+
+    events_for_display = []
+
+    print(os.environ['GOOGLE_CLIENT_ID'])
+    print(os.environ['GOOGLE_CLIENT_SECRET'])
+    print(client.access_token)
+
+    print(current_user.is_authenticated)
+
+
+    if current_user.is_authenticated:
+
+        
+        
+        
+        credentials = Credentials(
+                token=client.access_token,
+                token_uri="https://www.googleapis.com/oauth2/v3/token", 
+                client_id=os.environ['GOOGLE_CLIENT_ID'],
+                client_secret=os.environ['GOOGLE_CLIENT_SECRET'],
+            )
+
+        try:
+            service = build('calendar', 'v3', credentials=credentials)
+
+            # Call the Calendar API
+            now = datetime.datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
+            print('Getting the upcoming events')
+            events_result = service.events().list(calendarId='primary', timeMin=now,
+                                                maxResults=20, singleEvents=True,
+                                                orderBy='startTime').execute()
+            events = events_result.get('items', [])
+            
+            print(events)
+
+            # If no events don't procced
+            if events:
+
+                # Gets the start, end and name of the next 20 events
+                for event in events:
+                    summary = event['summary']
+                    start = event['start'].get('dateTime')
+                    end = event['end'].get('dateTime')
+                    
+                    event_dict = {
+                        "title": summary,
+                        "start": start,
+                        "end": end
+                    }
+                    events_for_display.append(event_dict)
+                    
+                    print(event_dict)
+
+        except HttpError as error:
+            print('An error occurred: %s' % error)
+
+        return render_template(
+            "calendartest.html",
+            login=current_user.is_authenticated,
+            events=events_for_display,
+            title="workday",
+            description="Organisiere deinen Arbeitstag mit Workday.",
+        )
+
+    else:
+        return redirect(url_for("login"))
 
 
 
